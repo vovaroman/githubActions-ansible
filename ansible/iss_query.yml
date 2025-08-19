@@ -1,0 +1,16 @@
+- name: Query current ISS position   # metadata
+  hosts: localhost                   # we don't need to connect to anything
+  gather_facts: no                   # pre-step for ansible
+  
+  tasks:
+    - name: Call open-notify ISS API
+      ansible.builtin.uri:           # module or path to a python script (ansible/builtin/uri.py)
+        url: "http://api.open-notify.org/iss-now.json"
+        method: GET
+        return_content: yes
+      register: iss_response
+
+    - name: Save JSON response to file
+      ansible.builtin.copy:          # module or path to a python script (ansible/builtin/copy.py)
+        dest: "/tmp/iss_response.json"
+        content: "{{ iss_response.content }}"
