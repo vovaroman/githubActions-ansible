@@ -1,0 +1,32 @@
+name: Ansible ISS API Query
+
+on:
+  workflow_dispatch:   # manual trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  run-ansible:
+    runs-on: ubuntu-latest
+    env:
+      ANSIBLE_NOCOWS: '1'    # ansible has global config values that can be set as env vars
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip     # use the python package installer pip to upgrade pip
+          pip install ansible                     # use the python package installer pip to install ansible
+
+      - name: Run Ansible playbook                # here we actually call ansible and the playbook (ansible code)
+        run: ansible-playbook -i ansible/inventory ansible/iss_query.yml
+
+      - name: Upload API response as artifact     # we want to save the results of our ansible playbook
+        uses: actions/upload-artifact@v4
+        with:
+          name: iss-api-response
+          path: /tmp/iss_response.json
