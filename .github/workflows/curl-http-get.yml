@@ -1,0 +1,26 @@
+name: cURL HTTP GET Request
+
+on:
+  workflow_dispatch:   # manual trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  send-get-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send GET request to example API
+        run: |
+          echo "Sending GET request..."
+          curl -s -o response.json -w "%{http_code}" http://api.open-notify.org/iss-now.json
+
+      - name: Show the response
+        run: cat response.json
+        
+      - name: Upload response as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: http-response
+          path: response.json       
